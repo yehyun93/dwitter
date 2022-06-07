@@ -1,46 +1,53 @@
+import * as userRepository from './auth.js';
+
 let tweets = [
   {
     id: '1',
     text: '드림코디분들 화이팅!',
     createdAt: Date.now().toString(),
-    name: 'Bob',
-    username: 'bob',
-    url: 'test.text'
+    userId : '1'
   },
   {
     id: '2',
     text: '안농',
     createdAt: Date.now().toString(),
-    name: 'Ellie',
-    username: 'ellie',
-    url: 'test.text'
+    userId : '1'
   }
 ];
 
 export async function getAll() {
-  return tweets;
+  return Promise.all(
+    tweets.map(async (tweet) => {
+      const { username, name, url } = await userRepository.findById(tweet.userId);
+      return { ...tweet, username, name, url };
+    })
+  );
 }
 
 export async function getAllByUsername(username) {
-  return tweets.filter(tweet => tweet.username === username);
+  return getAll().then((tweets) => tweets.filter(tweet => tweet.username === username));
 }
 
 export async function getById(id) {
-  return tweets.find(tweet => tweet.id === id);
+  const found = tweets.find((tweet) => tweet.id === id);
+  if(!found) {
+    return null;
+  }
+  const { username, name, url } = await userRepository.findById(found.id);
+  return { ...found, username, name, url };
 }
 
-export async function create(text, name, username) {
+export async function create(text, userId) {
   const tweet = {
     id: Date.now().toString(),
     text,
     createdAt: new Date(),
-    name,
-    username
+    userId
   };
 
   // 지금꺼를 제일 먼저 넣어라
   tweets = [tweet, ...tweets];
-  return tweet;
+  return getById(tweet.id);
 }
 
 export async function update(id, text) {
@@ -50,7 +57,7 @@ export async function update(id, text) {
     tweet.text = text;
   }
 
-  return tweet;
+  return getById(tweet.id);
 }
 
 export async function remove(id) {
