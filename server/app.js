@@ -8,6 +8,7 @@ import authRouter from './router/auth.js';
 import dotenv from 'dotenv';
 import { config } from './config.js';
 import { initSocket } from './connection/socket.js';
+import { db } from './data/db/database.js';
 
 dotenv.config();
 
