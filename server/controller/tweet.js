@@ -33,6 +33,10 @@ export async function updateTweet(req, res, next) {
   if (!tweet) {
     return res.status(404).json({ message: `Tweet not found: ${id}` });
   }
+
+  console.log('tweet', tweet);
+  console.log('userId', req.userId);
+
   if (tweet.userId !== req.userId) {
     return res.sendStatus(403);
   }
@@ -46,6 +50,7 @@ export async function deleteTweet(req, res, next) {
   if (!tweet) {
     return res.status(404).json({ message: `Tweet not found: ${id}` });
   }
+  console.log(tweet);
   if (tweet.userId !== req.userId) {
     return res.sendStatus(403);
   }
